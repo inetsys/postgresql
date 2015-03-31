@@ -83,6 +83,12 @@ when "fedora"
   default['postgresql']['client']['packages'] = %w{postgresql-devel}
   default['postgresql']['server']['packages'] = %w{postgresql-server}
   default['postgresql']['contrib']['packages'] = %w{postgresql-contrib}
+
+  if node['postgresql']['version'] == '9.3'
+    default['postgresql']['setup_script'] = "/usr/pgsql-#{node['postgresql']['version']}/bin/postgresql#{node['postgresql']['version'].split('.').join}-setup"
+  else
+    default['postgresql']['setup_script'] = "postgresql-setup"
+  end
   default['postgresql']['server']['service_name'] = "postgresql"
 
 when "amazon"
@@ -116,11 +122,19 @@ when "redhat", "centos", "scientific", "oracle"
   end
 
   if node['platform_version'].to_f >= 6.0 && node['postgresql']['version'] != '8.4'
-     default['postgresql']['dir'] = "/var/lib/pgsql/#{node['postgresql']['version']}/data"
-     default['postgresql']['server']['service_name'] = "postgresql-#{node['postgresql']['version']}"
+    default['postgresql']['dir'] = "/var/lib/pgsql/#{node['postgresql']['version']}/data"
+    default['postgresql']['setup_script'] = "postgresql-setup"
+    if node['init_package'] == 'systemd'
+      default['postgresql']['server']['service_name'] = "postgresql"
+    else
+      default['postgresql']['server']['service_name'] = "postgresql-#{node['postgresql']['version']}"
+
+    #default['postgresql']['setup_script'] = "/usr/pgsql-#{node['postgresql']['version']}/bin/postgresql#{node['postgresql']['version'].split('.').join}-setup"
+    end
   else
     default['postgresql']['dir'] = "/var/lib/pgsql/data"
     default['postgresql']['server']['service_name'] = "postgresql"
+    default['postgresql']['setup_script'] = "/usr/pgsql/bin/postgresql-setup"
   end
 
 when "suse"

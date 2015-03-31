@@ -23,6 +23,9 @@ platforms:
 - name: centos-6.4
 
 - name: centos-5.10
+  # driver: vagrant
+  #   box: centos-510
+  #   box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-5.10_chef-provisionerless.box
 
 suites:
 - name: default
